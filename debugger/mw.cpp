@@ -108,6 +108,7 @@ void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 
 	const std::map<std::string, std::function<void()>> command_mapper = {
 		{ "n", step },
 		{ "next", step },
+		{ "", step },
 		{ "q", screen.ExitLoopClosure() },
 		{ "quit", screen.ExitLoopClosure() },
 	};
