@@ -42,4 +42,7 @@
 
 # custom
 build/
+*.imp
 *.mr
+
+testy2025.zip

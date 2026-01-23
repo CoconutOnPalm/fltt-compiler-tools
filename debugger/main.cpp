@@ -23,15 +23,17 @@
 #include "instructions.hpp"
 
 extern void run_parser(std::vector<std::pair<int, var_t>>& program, FILE* data);
-extern void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 8>& r, std::map<var_t, var_t>& pam, std::vector<std::string>& instructions);
+extern void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 8>& r, std::map<var_t, var_t>& pam, std::vector<std::string>& instructions, std::span<var_t> cin);
 
 
-std::filesystem::path parse_args(const int argc, char const* argv[])
+std::pair<std::filesystem::path, std::string> parse_args(const int argc, char const* argv[])
 {
 	argparse::ArgumentParser parser;
 	parser.add_argument<std::string>("file")
 		.help("input .mr file")
 		.required();
+	parser.add_argument<std::string>("--input", "-i")
+		.help("stdin passed to program");
 
 	try
 	{
@@ -42,7 +44,12 @@ std::filesystem::path parse_args(const int argc, char const* argv[])
 		std::println(std::cerr, "{}", e.what());
 	}
 
-	return parser.get<std::string>("file");
+	std::string input = (parser.is_used("--input") ? parser.get<std::string>("--input") : "");
+
+	return {
+		parser.get<std::string>("file"),
+		input,
+	};
 }
 
 
@@ -64,7 +71,7 @@ void parse(std::vector<std::pair<int, var_t>>& program, const std::string_view f
 int main(const int argc, char const * argv[]) {
 	std::vector<std::pair<int, var_t>> program;
 
-	std::filesystem::path filename = parse_args(argc, argv);
+	auto [filename, console_in] = parse_args(argc, argv);
 
 	
 	parse(program, filename.string());
@@ -75,7 +82,9 @@ int main(const int argc, char const * argv[]) {
 	std::array<var_t, 8> registers;
 	std::map<var_t, var_t> memory;
 
-	run_machine(program, registers, memory, instructions);
+	std::vector<var_t> cin = ke::splitString<var_t>(console_in, {" "}, [](const std::string& str){ return ke::fromString<var_t>(str).value_or(0); });
+
+	run_machine(program, registers, memory, instructions, cin);
 
 	return 0;
 }

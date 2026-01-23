@@ -34,7 +34,7 @@
 
 
 
-void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 8>& r, std::map<var_t, var_t>& pam, std::vector<std::string>& instructions)
+void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 8>& r, std::map<var_t, var_t>& pam, std::vector<std::string>& instructions, std::span<var_t> cin)
 {
 	constinit static std::array<std::string, 8> reg_string_mapper = {
 		"RA", "RB", "RC", "RD", "RE", "RF", "RG", "RH"
@@ -44,6 +44,8 @@ void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 
 	var_t lr = 0;
 	var_t t = 0;
 	var_t io {};
+
+	size_t stdin_counter = 0;
 
 	std::srand(std::time(0));
 	for(int i = 0; i<8; i++ ) 
@@ -70,12 +72,21 @@ void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 
 
 		switch( program[lr].first )
 		{
-			case READ:		
-				log("READ instruction encountered (input mocked as 0)"); 
-				r[0] = 0; // consistent mock
-				io+=100; lr++; break;
+			case READ:
+				if (stdin_counter >= cin.size())
+				{
+					log("stdin out of range, setting input to 0");
+					r[0] = 0; // consistent mock
+					io+=100; lr++; break;
+				}
+				else
+				{
+					log(std::format("? {}", cin[stdin_counter]));
+					r[0] = cin[stdin_counter]; stdin_counter++;
+					io += 100; lr++; break;
+				}
 			case WRITE:		
-				log(std::format("> Output: {}", r[0])); 
+				log(std::format("> {}", r[0])); 
 				io+=100; lr++; break;
 
 			case LOAD:		r[0] = pam[program[lr].second]; t+=50; lr++; break;
