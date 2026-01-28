@@ -29,8 +29,6 @@ namespace tui
 
 		const ftxui::Color left_color = (new_cost < ref_cost) ? ftxui::Color::Green : ftxui::Color::White;
 		
-		KE_LOGDEBUG("cost-ratio={}", cost_ratio);
-		
 		gauge_bar = ftxui::hbox({
 			ftxui::gauge(cost_ratio) | ftxui::color(left_color) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, halfwidth),
 			ftxui::text("│") | ftxui::color(ftxui::Color::Blue), // Blue line at reference point
