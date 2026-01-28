@@ -100,7 +100,7 @@ void overrideCosts(const Config& config, const std::vector<BenchmarkResult>& res
 	{
 		if (result.compilation_success)
 		{
-			new_costs[result.filename.filename().string()] = result.actual_cost;
+			new_costs[result.filename.filename().string()] = result.new_cost;
 		}
 	}
 

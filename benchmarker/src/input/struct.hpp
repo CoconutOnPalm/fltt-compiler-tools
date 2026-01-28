@@ -27,7 +27,7 @@ struct BenchmarkResult
 {
 	std::filesystem::path filename;
 	uint64_t reference_cost;
-	uint64_t actual_cost;
+	uint64_t new_cost;
 	bool compilation_success;
 	std::string error_message;
 };

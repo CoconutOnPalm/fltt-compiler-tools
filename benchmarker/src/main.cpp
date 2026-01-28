@@ -81,19 +81,19 @@ int main(const int argc, char const * argv[]) {
 			// compilation error
 			result.compilation_success = false;
 			result.error_message = "Compiler returned code: " + std::to_string(process.returncode);
-			result.actual_cost = 0;
+			result.new_cost = -1;
 		}
 		else
 		{
 			try {
 				std::vector<std::pair<int, var_t>> program;
 				parse(program, benchmark_unit.asm_filename.string());
-				result.actual_cost = static_cast<uint64_t>(run_machine(program, benchmark_unit.input));
+				result.new_cost = static_cast<uint64_t>(run_machine(program, benchmark_unit.input));
 			}
 			catch (const std::exception& e) {
 				result.compilation_success = false;
 				result.error_message = "Runtime error: " + std::string(e.what());
-				result.actual_cost = 0;
+				result.new_cost = -1;
 			}
 		}
 		

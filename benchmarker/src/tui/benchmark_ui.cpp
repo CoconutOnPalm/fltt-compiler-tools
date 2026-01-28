@@ -11,141 +11,128 @@
 
 #include "../../../global/colors.hpp"
 
-namespace tui 
+namespace tui
 {
 
-ftxui::Element createCostGauge(const std::string& filename, uint64_t ref_cost, uint64_t actual_cost, uint64_t max_cost, int screen_width) {
-	const int total_width = std::max(20, screen_width - 60); // Leave space for labels and borders, minimum 20
-	const int middle_point = total_width / 2;
-	
-	// Calculate how much the actual cost deviates from reference
-	float cost_ratio = static_cast<float>(actual_cost) / ref_cost;
-	
-	ftxui::Element gauge_bar;
-	if (actual_cost <= ref_cost) 
+	ftxui::Element createCostGauge(const std::string& filename, uint64_t ref_cost, uint64_t new_cost, uint64_t max_cost, int screen_width)
 	{
-		// Green gauge from left - when at budget, fill entire left side
-		float green_ratio = 0; 
-		green_ratio = cost_ratio;
+		const int width = std::max(20, screen_width - 60); // Leave space for labels and borders, minimum 20
+		const int halfwidth = width / 2;
 
-		int green_width = static_cast<int>(green_ratio * middle_point);
-		
-		gauge_bar = ftxui::hbox({
-			ftxui::gauge(1.0f) | ftxui::color(ftxui::Color::Green) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, green_width),
-			ftxui::text("") | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, middle_point - green_width),
-			ftxui::text("│") | ftxui::color(ftxui::Color::Blue), // Blue line at reference point
-			ftxui::text("") | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, middle_point - 1)
-		});
-	} 
-	else 
-	{
-		// Red gauge: full left side + right side showing surplus
+		// Calculate how much the actual cost deviates from reference
+		float cost_ratio = static_cast<float>(new_cost) / ref_cost;
 		float surplus_ratio = cost_ratio - 1.0f; // How much over budget
-		int red_surplus_width = static_cast<int>(surplus_ratio * middle_point);
-		red_surplus_width = std::min(red_surplus_width, middle_point - 1); // Don't exceed right side
+		ke::restrainVariable(cost_ratio, ke::ClosedRange(0.0f, 1.0f));
+		ke::restrainVariable(surplus_ratio, ke::ClosedRange(0.0f, 1.0f));
+
+		ftxui::Element gauge_bar;
+
+		const ftxui::Color left_color = (new_cost < ref_cost) ? ftxui::Color::Green : ftxui::Color::White;
+		
+		KE_LOGDEBUG("cost-ratio={}", cost_ratio);
 		
 		gauge_bar = ftxui::hbox({
-			ftxui::gauge(1.0f) | ftxui::color(ftxui::Color::Red) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, middle_point),
+			ftxui::gauge(cost_ratio) | ftxui::color(left_color) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, halfwidth),
 			ftxui::text("│") | ftxui::color(ftxui::Color::Blue), // Blue line at reference point
-			ftxui::gauge(1.0f) | ftxui::color(ftxui::Color::Red) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, red_surplus_width),
-			ftxui::text("") | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, middle_point - 1 - red_surplus_width)
+			ftxui::gauge(surplus_ratio) | ftxui::color(ftxui::Color::Red) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, halfwidth),
+			// ftxui::text("") | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, halfwidth - (halfwidth * surplus_ratio - 1))
 		});
-	}
-	
-	// Status indicator
-	auto status_color = actual_cost <= ref_cost ? ftxui::Color::Green : ftxui::Color::Red;
-	
-	// Put everything on one line: filename, costs, and gauge bar
-	return ftxui::vbox({
-		ftxui::hbox({
-			ftxui::text(filename) | ftxui::bold | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 30),
-			ftxui::text(" Ref: " + ((ref_cost == std::numeric_limits<uint64_t>::max()) ? "inf" : std::to_string(ref_cost))) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 20),
-			ftxui::text(" New: " + std::to_string(actual_cost)) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 20),
-			ftxui::text(" ") | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 2),
-			gauge_bar
-		}),
-		ftxui::separator()
-	});
-}
 
-bool showBenchmarkResults(std::vector<BenchmarkResult>& results) 
-{
-	// Find max cost for scaling
-	uint64_t max_cost = 1;
-	for (const auto& result : results) 
-	{
-		max_cost = std::max(max_cost, std::max(result.reference_cost, result.actual_cost));
-	}
-	max_cost = static_cast<uint64_t>(max_cost * 1.1); // Add 10% padding
-	
-	// Get terminal width for responsive gauges
-	auto screen_size = ftxui::Terminal::Size();
-	int screen_width = screen_size.dimx;
+		// Status indicator
+		auto status_color = new_cost <= ref_cost ? ftxui::Color::Green : ftxui::Color::Red;
 
-	std::println();
-	
-	// Print each gauge
-	for (const auto& result : results) 
-	{
-		ftxui::Element gauge_element;
-		
-		if (result.compilation_success) 
-		{
-			gauge_element = createCostGauge(
-				result.filename.filename().string(),
-				result.reference_cost,
-				result.actual_cost,
-				max_cost,
-				screen_width
-			);
-		} else 
-		{
-			gauge_element = ftxui::vbox({
-				ftxui::hbox({
-					ftxui::text(result.filename.filename().string()) | ftxui::bold | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 20),
-					ftxui::text(" COMPILATION FAILED") | ftxui::color(ftxui::Color::Red),
-					ftxui::text(" Error: " + result.error_message) | ftxui::color(ftxui::Color::Red)
-				}),
-				ftxui::separator()
+		// Put everything on one line: filename, costs, and gauge bar
+		return ftxui::vbox({
+			ftxui::hbox({
+				ftxui::text(filename) | ftxui::bold | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 30),
+				ftxui::text(" Ref: " + ((ref_cost == std::numeric_limits<uint64_t>::max()) ? "inf" : std::to_string(ref_cost))) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 20),
+				ftxui::text(" New: " + std::to_string(new_cost)) | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 20),
+				ftxui::text(" ") | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 2),
+				gauge_bar
+			}),
+			ftxui::separator()
 			});
-		}
-		
-		// Create a screen sized for this element only
-		auto element_screen = ftxui::Screen::Create(
-			ftxui::Dimension::Fit(gauge_element)
-		);
-		ftxui::Render(element_screen, gauge_element);
-		element_screen.Print();
-		std::cout << std::endl;
 	}
-	
-	// Calculate and print summary
-	int successful = std::count_if(results.begin(), results.end(), 
-		[](const BenchmarkResult& r) { return r.compilation_success; });
-	int within_budget = std::count_if(results.begin(), results.end(),
-		[](const BenchmarkResult& r) { return r.compilation_success && r.actual_cost <= r.reference_cost; });
-	
-	auto summary = ftxui::hbox({
-		ftxui::text("Summary: ") | ftxui::bold,
-		ftxui::text(std::to_string(within_budget) + "/" + std::to_string(successful) + " within budget") |
-			ftxui::color(within_budget == successful ? ftxui::Color::Green : ftxui::Color::Yellow)
-	});
-	
-	auto summary_screen = ftxui::Screen::Create(ftxui::Dimension::Fit(summary));
-	ftxui::Render(summary_screen, summary);
-	summary_screen.Print();
 
-	const static std::set<std::string> mapped_responses = {
-		"Y", "YES"
-	};
-	
-	// Simple text prompt for user choice
-	std::println();
-	std::print("override the reference costs? (y/N): ");
-	std::string response;
-	std::getline(std::cin, response);
-	
-	return mapped_responses.contains(ke::toUpper(response));
-}
+	bool showBenchmarkResults(std::vector<BenchmarkResult>& results)
+	{
+		// Find max cost for scaling
+		uint64_t max_cost = 1;
+		for (const auto& result : results)
+		{
+			max_cost = std::max(max_cost, std::max(result.reference_cost, result.new_cost));
+		}
+		max_cost = static_cast<uint64_t>(max_cost * 1.1); // Add 10% padding
+
+		// Get terminal width for responsive gauges
+		auto screen_size = ftxui::Terminal::Size();
+		int screen_width = screen_size.dimx;
+
+		std::println();
+
+		// Print each gauge
+		for (const auto& result : results)
+		{
+			ftxui::Element gauge_element;
+
+			if (result.compilation_success)
+			{
+				gauge_element = createCostGauge(
+					result.filename.filename().string(),
+					result.reference_cost,
+					result.new_cost,
+					max_cost,
+					screen_width
+				);
+			}
+			else
+			{
+				gauge_element = ftxui::vbox({
+					ftxui::hbox({
+						ftxui::text(result.filename.filename().string()) | ftxui::bold | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 20),
+						ftxui::text(" COMPILATION FAILED") | ftxui::color(ftxui::Color::Red),
+						ftxui::text(" Error: " + result.error_message) | ftxui::color(ftxui::Color::Red)
+					}),
+					ftxui::separator()
+				});
+			}
+
+			// Create a screen sized for this element only
+			auto element_screen = ftxui::Screen::Create(
+				ftxui::Dimension::Fit(gauge_element)
+			);
+			ftxui::Render(element_screen, gauge_element);
+			element_screen.Print();
+			std::cout << std::endl;
+		}
+
+		// Calculate and print summary
+		int successful = std::count_if(results.begin(), results.end(),
+			[](const BenchmarkResult& r) { return r.compilation_success; });
+		int within_budget = std::count_if(results.begin(), results.end(),
+			[](const BenchmarkResult& r) { return r.compilation_success && r.new_cost <= r.reference_cost; });
+
+		auto summary = ftxui::hbox({
+			ftxui::text("Summary: ") | ftxui::bold,
+			ftxui::text(std::to_string(within_budget) + "/" + std::to_string(successful) + " within budget") |
+				ftxui::color(within_budget == successful ? ftxui::Color::Green : ftxui::Color::Yellow)
+			});
+
+		auto summary_screen = ftxui::Screen::Create(ftxui::Dimension::Fit(summary));
+		ftxui::Render(summary_screen, summary);
+		summary_screen.Print();
+
+		const static std::set<std::string> mapped_responses = {
+			"Y", "YES"
+		};
+
+		// Simple text prompt for user choice
+		std::println();
+		std::print("override the reference costs? (y/N): ");
+		std::string response;
+		std::getline(std::cin, response);
+
+		return mapped_responses.contains(ke::toUpper(response));
+	}
 
 } // namespace tui
