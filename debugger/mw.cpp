@@ -29,8 +29,8 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 
-#include "instructions.hpp"
-#include "colors.hpp"
+#include "../global/instructions.hpp"
+#include "../global/colors.hpp"
 
 
 

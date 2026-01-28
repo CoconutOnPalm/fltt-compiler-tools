@@ -1,0 +1,6 @@
+{
+    "benchmarks-dir": "benchmarker/programs",
+    "benchmark-table": "benchmarker/benchmark-table.json",
+    "compiler-exe": "kompilator",
+    "compiled-dir": "benchmarker/.compiled"
+}

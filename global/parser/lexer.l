@@ -10,7 +10,7 @@
 %option nounput
 %{
 #include "parser.hpp"
-#include "instructions.hpp"
+#include "../instructions.hpp"
 
 int yylex();
 %}

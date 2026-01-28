@@ -10,7 +10,7 @@
 %code requires { 
 #include<vector> 
 #include<utility>
-#include "instructions.hpp"
+#include "../instructions.hpp"
 
 #define YYSTYPE var_t
 }
@@ -20,8 +20,8 @@
 #include <vector>
 #include <print>
 
-#include "instructions.hpp"
-#include "colors.hpp"
+#include "../instructions.hpp"
+#include "../colors.hpp"
 
 extern int yylineno;
 int yylex();
@@ -63,9 +63,9 @@ void yyerror(std::vector<std::pair<int, var_t>>& program, char const *s)
 
 void run_parser(std::vector<std::pair<int,var_t>>& program, FILE* data ) 
 {
-	std::println("{}Reading the code{}", cBlue, cReset);
+	/* std::println("{}Reading the code{}", cBlue, cReset); */
 	yyset_in(data);
 	yyparse(program);
-	std::println("{}Finished reading the code (instructions: {}){}", cBlue, program.size(), cReset);
+	/* std::println("{}Finished reading the code (instructions: {}){}", cBlue, program.size(), cReset); */
 }
 

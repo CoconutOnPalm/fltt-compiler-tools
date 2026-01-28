@@ -19,8 +19,8 @@
 #include <print>
 #include <KEUL/KEUL.hpp>
 
-#include "colors.hpp"
-#include "instructions.hpp"
+#include "../global/colors.hpp"
+#include "../global/instructions.hpp"
 
 extern void run_parser(std::vector<std::pair<int, var_t>>& program, FILE* data);
 extern void run_machine(std::vector<std::pair<int, var_t>>& program, std::array<var_t, 8>& r, std::map<var_t, var_t>& pam, std::vector<std::string>& instructions, std::span<var_t> cin);
@@ -42,6 +42,7 @@ std::pair<std::filesystem::path, std::string> parse_args(const int argc, char co
 	catch(const std::exception& e)
 	{
 		std::println(std::cerr, "{}", e.what());
+		std::exit(1);
 	}
 
 	std::string input = (parser.is_used("--input") ? parser.get<std::string>("--input") : "");
