@@ -5,6 +5,8 @@ project(fltt-compiler-tools)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
+file(MAKE_DIRECTORY benchmarker/.compiled)
+
 include(FetchContent)
 
 FetchContent_Declare(

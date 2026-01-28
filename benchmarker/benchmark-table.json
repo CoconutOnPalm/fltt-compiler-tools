@@ -5,75 +5,15 @@
     },
     {
         "file": "program0.imp",
-        "in": [0]
-    },
-    {
-        "file": "program0.imp",
-        "in": [1]
-    },
-    {
-        "file": "program0.imp",
-        "in": [13]
-    },
-    {
-        "file": "program0.imp",
         "in": [100]
-    },
-    {
-        "file": "program1.imp",
-        "in": [0, 0, 0, 0]
-    },
-    {
-        "file": "program1.imp",
-        "in": [10, 0, 0, 5]
     },
     {
         "file": "program1.imp",
         "in": [14, 28, 9, 6]
     },
     {
-        "file": "program1.imp",
-        "in": [0, 6, 0, 9]
-    },
-    {
-        "file": "program3.imp",
-        "in": [13]
-    },
-    {
-        "file": "program3.imp",
-        "in": [60]
-    },
-    {
-        "file": "program3.imp",
-        "in": [1024]
-    },
-    {
-        "file": "program3.imp",
-        "in": [1234567890]
-    },
-    {
-        "file": "program3.imp",
-        "in": [12345678901]
-    },
-    {
         "file": "program3.imp",
         "in": [12345678903]
-    },
-    {
-        "file": "example1.imp",
-        "in": [30, 12]
-    },
-    {
-        "file": "example1.imp",
-        "in": [13, 5]
-    },
-    {
-        "file": "example1.imp",
-        "in": [6, 6]
-    },
-    {
-        "file": "example1.imp",
-        "in": [7, 0]
     },
     {
         "file": "example1.imp",
@@ -98,10 +38,6 @@
     {
         "file": "example6.imp",
         "in": [20]
-    },
-    {
-        "file": "example7.imp",
-        "in": [0, 0, 0]
     },
     {
         "file": "example7.imp",

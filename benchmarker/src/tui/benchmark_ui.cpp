@@ -144,7 +144,7 @@ bool showBenchmarkResults(std::vector<BenchmarkResult>& results)
 	
 	// Simple text prompt for user choice
 	std::println();
-	std::println("override the reference costs? (y/N): ");
+	std::print("override the reference costs? (y/N): ");
 	std::string response;
 	std::getline(std::cin, response);
 	
