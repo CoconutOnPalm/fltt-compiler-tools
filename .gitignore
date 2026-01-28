@@ -45,4 +45,8 @@ build/
 # *.imp
 *.mr
 
+debug
+benchmark
+kompilator
+
 testy2025.zip
