@@ -1,0 +1,10 @@
+PROGRAM IS
+    x, y
+IN
+    READ x;
+    FOR i FROM 1 TO 10000 DO
+        y := x % 2;
+        y := y / 2;
+    ENDFOR
+    WRITE x;
+END

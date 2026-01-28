@@ -1,0 +1,9 @@
+PROGRAM IS
+    x
+IN
+    x := 0;
+    FOR i FROM 0 TO 1000000 DO
+        x := i;
+    ENDFOR
+    WRITE i;
+END

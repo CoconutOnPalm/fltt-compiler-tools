@@ -118,5 +118,53 @@
     {
         "file": "exampleA.imp",
         "in": []
+    },
+    {
+        "file": "benchmark-add.imp",
+        "in": [0]
+    },
+    {
+        "file": "benchmark-add-const.imp",
+        "in": [0]
+    },
+    {
+        "file": "benchmark-sub.imp",
+        "in": [500000500000]
+    },
+    {
+        "file": "benchmark-sub-const.imp",
+        "in": [500000500000]
+    },
+    {
+        "file": "benchmark-mult.imp",
+        "in": [1]
+    },
+    {
+        "file": "benchmark-mult-const.imp",
+        "in": [1]
+    },
+    {
+        "file": "benchmark-div.imp",
+        "in": [18446744073709551615]
+    },
+    {
+        "file": "benchmark-div-const.imp",
+        "in": [18446744073709551615]
+    },
+    {
+        "file": "benchmark-mod.imp",
+        "in": [18446744073709551615]
+    },
+    {
+        "file": "benchmark-mod-const.imp",
+        "in": [18446744073709551615]
+    },
+    {
+        "file": "benchmark-no-read.imp",
+        "in": []
+    },
+    {
+        "file": "benchmark-no-write.imp",
+        "in": [0]
     }
 ]
