@@ -25,11 +25,8 @@ ftxui::Element createCostGauge(const std::string& filename, uint64_t ref_cost, u
 	if (actual_cost <= ref_cost) 
 	{
 		// Green gauge from left - when at budget, fill entire left side
-		float green_ratio;
-		if (actual_cost == ref_cost) 
-			green_ratio = 1.0f; // Fill entire left side when exactly at budget 
-		else 
-			green_ratio = 1.0f - cost_ratio; // How much under budget we are
+		float green_ratio = 0; 
+		green_ratio = cost_ratio;
 
 		int green_width = static_cast<int>(green_ratio * middle_point);
 		
