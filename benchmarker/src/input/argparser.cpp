@@ -14,6 +14,7 @@ std::string parse_args(const int argc, char const* argv[])
 	catch(const std::exception& e)
 	{
 		std::println(std::cerr, "{}", e.what());
+		std::exit(1);
 	}
 
 	return {
